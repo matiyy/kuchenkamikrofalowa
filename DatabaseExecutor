@@ -1,0 +1,85 @@
+package com.microwave.db;
+
+import com.microwave.data.RecipeData;
+
+import java.sql.*;
+import java.util.Random;
+
+public class DatabaseExecutor {
+
+    public static ResultSet executeSelect(String selectQuery){
+        Connection connection = DBConnector.connect();
+        try {
+            Statement statement = connection.createStatement();
+            return statement.executeQuery(selectQuery);
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        finally {
+            DBDisconnector.close(connection);
+        }
+    }
+
+    public static ResultSet executeSelectWithVariable(String selectQuery, String value){
+        Connection connection = DBConnector.connect();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
+            preparedStatement.setString(1, value);
+            return preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        finally {
+            DBDisconnector.close(connection);
+        }
+    }
+
+    public static void executeQuery(String executeQuery, RecipeData newRecipe){
+        Connection connection = DBConnector.connect();
+        try {
+            Random rand = new Random();
+            PreparedStatement preparedStatement = connection.prepareStatement(executeQuery);
+            preparedStatement.setLong(1, rand.nextLong());
+            preparedStatement.setInt(2, newRecipe.getTemperature());
+            preparedStatement.setInt(3, newRecipe.getTime());
+            preparedStatement.setString(4, newRecipe.getRecipeName());
+
+            int result = preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        finally {
+            DBDisconnector.close(connection);
+        }
+    }
+
+    public static void executeEditQuery(String editQuery, int newTemp) {
+        Connection connection = DBConnector.connect();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(editQuery);
+            preparedStatement.setLong(1, newTemp);
+            int result = preparedStatement.executeUpdate();
+            System.out.println("Edited");
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        finally {
+            DBDisconnector.close(connection);
+        }
+    }
+
+    public static void executeRemoveQuery(String removeQuery, String recipeToDelete) {
+        Connection connection = DBConnector.connect();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(removeQuery);
+            preparedStatement.setString(1, recipeToDelete);
+            int result = preparedStatement.executeUpdate();
+            System.out.println("Removed");
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        finally {
+            DBDisconnector.close(connection);
+        }
+    }
+}
