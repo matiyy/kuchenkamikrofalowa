@@ -1,0 +1,37 @@
+package com.microwave.data;
+
+public class RecipeData {
+    private String recipeName;
+    private Integer temperature;
+    private Integer time;
+
+    public RecipeData(String recipeName, Integer temperature, Integer time) {
+        this.recipeName = recipeName;
+        this.temperature = temperature;
+        this.time = time;
+    }
+
+    public String getRecipeName() {
+        return recipeName;
+    }
+
+    public void setRecipeName(String recipeName) {
+        this.recipeName = recipeName;
+    }
+
+    public Integer getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(Integer temperature) {
+        this.temperature = temperature;
+    }
+
+    public Integer getTime() {
+        return time;
+    }
+
+    public void setTime(Integer time) {
+        this.time = time;
+    }
+}
