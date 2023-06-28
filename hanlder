@@ -1,0 +1,41 @@
+package com.microwave.handlers;
+
+import com.microwave.data.Recipe;
+import com.microwave.data.RecipeData;
+import com.microwave.services.RecipeService;
+
+public class Handler {
+    private final RecipeService recipeService;
+
+    public Handler(RecipeService recipeService) {
+        this.recipeService = recipeService;
+    }
+
+    public Recipe findByName(String recipeNameAnswer) {
+        return recipeService.readByName(recipeNameAnswer);
+    }
+
+    public void createRecipe(String recipeNameNew, String temperatureNew, String timeNew) {
+        recipeService.create(new RecipeData(recipeNameNew, Integer.parseInt(temperatureNew), Integer.parseInt(timeNew)));
+    }
+
+    public String findAll() {
+        return recipeService.readAll().toString();
+    }
+
+    public void runRecipe(String recipeToRun) {
+        recipeService.runRecipe(recipeToRun);
+    }
+
+    public void runRecipeManual(String recipeNameToRun, String temp, String time) {
+        recipeService.runManual(recipeNameToRun, temp, time);
+    }
+
+    public void updateRecipeTemperature(String recipeName, String newTemperature) {
+        recipeService.updateRecipe(recipeName, newTemperature);
+    }
+
+    public void deleteRecipe(String recipeToDelete) {
+        recipeService.deleteRecipe(recipeToDelete);
+    }
+}
