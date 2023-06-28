@@ -1,0 +1,63 @@
+package com.microwave.data;
+
+
+public class Recipe {
+    private Long recipeId;
+    private String recipeName;
+    private Integer temperature;
+    private Integer time;
+
+    public Recipe(Long recipeId, String recipeName, Integer temperature, Integer time) {
+        this.recipeId = recipeId;
+        this.recipeName = recipeName;
+        this.temperature = temperature;
+        this.time = time;
+    }
+
+    public Recipe(String recipeName, Integer temperature, Integer time) {
+        this.recipeName = recipeName;
+        this.temperature = temperature;
+        this.time = time;
+    }
+
+    public Long getRecipeId() {
+        return recipeId;
+    }
+
+    public void setRecipeId(Long recipeId) {
+        this.recipeId = recipeId;
+    }
+
+    public String getRecipeName() {
+        return recipeName;
+    }
+
+    public void setRecipeName(String recipeName) {
+        this.recipeName = recipeName;
+    }
+
+    public Integer getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(Integer temperature) {
+        this.temperature = temperature;
+    }
+
+    public Integer getTime() {
+        return time;
+    }
+
+    public void setTime(Integer time) {
+        this.time = time;
+    }
+
+    @Override
+    public String toString() {
+        return "Recipe{" +
+                "recipeName='" + recipeName + '\'' +
+                ", temperature=" + temperature +
+                ", time=" + time +
+                '}';
+    }
+}
