@@ -1,0 +1,80 @@
+package com.microwave;
+
+import com.microwave.data.Recipe;
+import com.microwave.data.RecipeData;
+import com.microwave.handlers.Handler;
+import com.microwave.services.RecipeService;
+
+import java.util.Scanner;
+
+import static java.lang.System.exit;
+
+public class Main {
+
+    public static void main(String[] args){
+        RecipeService recipeService = new RecipeService();
+        Handler handler = new Handler(recipeService);
+
+        Scanner scanner = new Scanner(System.in);
+        int userRequest;
+
+        while(true){
+            System.out.println("Co chcesz zrobic:\n1 - wypisz wszystkie przepisy,\n2 - znajdz przepis po nazwie,\n3 - dodaj nowy przepis,\n4 - aktualizuj temperature,");
+            System.out.println("5 - usun przepis,\n6 - odpal program,\n7 - odpal mikrofale manualnie,\n10 - wyjdz z programu,\n");
+            userRequest=Integer.parseInt(scanner.nextLine());
+            switch(userRequest){
+                case 1:
+                    System.out.println(handler.findAll());
+                    break;
+                case 2:
+                    System.out.println("Podaj nazwe dania, dla ktorego chcesz znalezc przepis");
+                    String recipeNameAnswer = scanner.nextLine();
+                    Recipe byName = handler.findByName(recipeNameAnswer);
+                    if(byName!=null){
+                        System.out.println(byName.toString());
+                    }
+                    break;
+                case 3:
+                    System.out.println("Podaj nazwe przepisu:\n");
+                    String recipeNameNew = scanner.nextLine();
+                    System.out.println("Podaj temperature:\n");
+                    String temperatureNew = scanner.nextLine();
+                    System.out.println("Podaj czas:\n");
+                    String timeNew = scanner.nextLine();
+                    handler.createRecipe(recipeNameNew, temperatureNew, timeNew);
+                    break;
+                case 4:
+                    System.out.println("Podaj jaki przepis chcesz zaktualizowac:\n");
+                    String recipeName = scanner.nextLine();
+                    System.out.println("Podaj nowa temperature:\n");
+                    String newTemperature = scanner.nextLine();
+                    handler.updateRecipeTemperature(recipeName,newTemperature);
+                    break;
+                case 5:
+                    System.out.println("Podaj nazwe przepisu, ktory mam usunac:\n");
+                    String recipeToDelete = scanner.nextLine();
+                    handler.deleteRecipe(recipeToDelete);
+                    break;
+                case 6:
+                    System.out.println("Podaj nazwe przepisu, aby odpalic mikrofale:\n");
+                    String recipeToRun = scanner.nextLine();
+                    handler.runRecipe(recipeToRun);
+                    break;
+                case 7:
+                    System.out.println("Ustaw dane mikrofali.\n Podaj nazwe dania:\n");
+                    String recipeNameToRun = scanner.nextLine();
+                    System.out.println("Podaj temperature:\n");
+                    String temp = scanner.nextLine();
+                    System.out.println("Podaj czas:\n");
+                    String time = scanner.nextLine();
+                    handler.runRecipeManual(recipeNameToRun,temp,time);
+                    break;
+                case 10:
+                    exit(1);
+                default:
+                    System.out.println("Nieznana komenda, wpisz ponownie!");
+            }
+        }
+
+    }
+}
