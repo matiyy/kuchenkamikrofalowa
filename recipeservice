@@ -1,0 +1,139 @@
+package com.microwave.services;
+
+import com.microwave.data.Recipe;
+import com.microwave.data.RecipeData;
+import com.microwave.db.DatabaseExecutor;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RecipeService {
+    private static final String INSERT_QUERY = "INSERT INTO recipe(\"RECIPE_ID\", \"TEMPERATURE\", \"TIME\", \"RECIPE_NAME\") VALUES (?,?,?,?)";
+    private static final String EDIT_QUERY = "UPDATE recipe SET \"TEMPERATURE\" WHERE \"RECIPE_NAME\" = ?";
+    private static final String REMOVE_QUERY = "DELETE FROM recipe WHERE \"RECIPE_NAME\" = ?";
+
+    public void create(RecipeData recipeData){
+        if(existByName(recipeData.getRecipeName())){
+            throw new RuntimeException("This recipe currently exist");
+        }
+
+        DatabaseExecutor.executeQuery(INSERT_QUERY, recipeData);
+    }
+
+    public List<Recipe> readAll(){
+        List<Recipe> allRecipes = new ArrayList<>();
+        try {
+            ResultSet resultSet = DatabaseExecutor.executeSelect("SELECT * FROM recipe");
+            while(resultSet.next()){
+                Long recipeId = resultSet.getLong("RECIPE_ID");
+                String recipeName = resultSet.getString("RECIPE_NAME");
+                Integer recipeTemperature = resultSet.getInt("TEMPERATURE");
+                Integer recipeTime= resultSet.getInt("TIME");
+                Recipe recipeItem = new Recipe(recipeId,recipeName, recipeTemperature, recipeTime);
+                allRecipes.add(recipeItem);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return allRecipes;
+    }
+
+    public Recipe readByName(String recipeNameValue){
+        try {
+            ResultSet resultSet = DatabaseExecutor.executeSelectWithVariable("SELECT * FROM recipe WHERE \"RECIPE_NAME\" = ?", recipeNameValue);
+            if(resultSet.next()){
+                Long recipeId = resultSet.getLong("RECIPE_ID");
+                String recipeName = resultSet.getString("RECIPE_NAME");
+                Integer recipeTemperature = resultSet.getInt("TEMPERATURE");
+                Integer recipeTime= resultSet.getInt("TIME");
+                return new Recipe(recipeId, recipeName, recipeTemperature, recipeTime);
+            }
+            else{
+                System.out.println("Recipe is not found");
+                return null;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public Boolean existByName(String recipeNameValue){
+        try {
+            ResultSet resultSet = DatabaseExecutor.executeSelectWithVariable("SELECT * FROM recipe WHERE \"RECIPE_NAME\" = ?", recipeNameValue);
+            return resultSet.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public void runRecipe(String recipeToRun) {
+        if(recipeToRun.isBlank()){
+            throw new RuntimeException("Provided empty string!");
+        }
+        if(!existByName(recipeToRun)){
+            throw new RuntimeException("Recipe does not exist!");
+        }
+        Recipe foundRecipe = readByName(recipeToRun);
+        runMicrowave(foundRecipe.getTime());
+        System.out.println("UPIECZONO");
+    }
+
+    public void runManual(String recipeNameToRun, String temp, String time) {
+        if(recipeNameToRun.isBlank() || temp.isBlank() || time.isBlank()){
+            throw new RuntimeException("Provided empty string!");
+        }
+        Recipe foundRecipe = readByName(recipeNameToRun);
+        if(foundRecipe!=null){
+            if(foundRecipe.getTime().equals(Integer.parseInt(time))){
+                runMicrowave(foundRecipe.getTime());
+                System.out.println("UPIECZONO");
+            }
+            else if(foundRecipe.getTime() > Integer.parseInt(time)){
+                runMicrowave(Integer.parseInt(time));
+                System.out.println("NIEDOPIECZONO");
+            }
+            else{
+                runMicrowave(Integer.parseInt(time));
+                System.out.println("SPALONO");
+            }
+        }
+        else{
+            runMicrowave(Integer.parseInt(time));
+            System.out.println("UPIECZONO");
+        }
+    }
+
+    private void runMicrowave(Integer time) {
+        try {
+            System.out.println("PIECZENIE....");
+            Thread.sleep(time*100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateRecipe(String recipeName, String newTemperature) {
+        if(newTemperature.isBlank() || recipeName.isBlank()){
+            throw new RuntimeException("Provided empty string!");
+        }
+        if(!existByName(recipeName)){
+            throw new RuntimeException("Recipe does not exist!");
+        }
+        DatabaseExecutor.executeEditQuery(EDIT_QUERY, Integer.parseInt(newTemperature));
+        System.out.println("Edited " + recipeName);
+    }
+
+    public void deleteRecipe(String recipeToDelete) {
+        if(recipeToDelete.isBlank()){
+            throw new RuntimeException("Provided empty string!");
+        }
+        if(!existByName(recipeToDelete)){
+            throw new RuntimeException("Recipe does not exist!");
+        }
+        DatabaseExecutor.executeRemoveQuery(REMOVE_QUERY, recipeToDelete);
+        System.out.println("Removed "+ recipeToDelete);
+    }
+}
