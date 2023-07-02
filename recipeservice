@@ -11,7 +11,7 @@ import java.util.List;
 
 public class RecipeService {
     private static final String INSERT_QUERY = "INSERT INTO recipe(\"RECIPE_ID\", \"TEMPERATURE\", \"TIME\", \"RECIPE_NAME\") VALUES (?,?,?,?)";
-    private static final String EDIT_QUERY = "UPDATE recipe SET \"TEMPERATURE\" WHERE \"RECIPE_NAME\" = ?";
+    private static final String EDIT_QUERY = "UPDATE recipe SET \"TEMPERATURE\" = ? WHERE \"RECIPE_NAME\" = ?";
     private static final String REMOVE_QUERY = "DELETE FROM recipe WHERE \"RECIPE_NAME\" = ?";
 
     public void create(RecipeData recipeData){
@@ -115,6 +115,8 @@ public class RecipeService {
         }
     }
 
+
+
     public void updateRecipe(String recipeName, String newTemperature) {
         if(newTemperature.isBlank() || recipeName.isBlank()){
             throw new RuntimeException("Provided empty string!");
@@ -122,7 +124,7 @@ public class RecipeService {
         if(!existByName(recipeName)){
             throw new RuntimeException("Recipe does not exist!");
         }
-        DatabaseExecutor.executeEditQuery(EDIT_QUERY, Integer.parseInt(newTemperature));
+        DatabaseExecutor.executeEditQuery(EDIT_QUERY, recipeName, Integer.parseInt(newTemperature));
         System.out.println("Edited " + recipeName);
     }
 
