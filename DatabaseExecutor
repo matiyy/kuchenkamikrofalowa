@@ -53,11 +53,12 @@ public class DatabaseExecutor {
         }
     }
 
-    public static void executeEditQuery(String editQuery, int newTemp) {
+    public static void executeEditQuery(String editQuery, String recipeName, int newTemp) {
         Connection connection = DBConnector.connect();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(editQuery);
             preparedStatement.setLong(1, newTemp);
+            preparedStatement.setString(2, recipeName);
             int result = preparedStatement.executeUpdate();
             System.out.println("Edited");
         } catch (SQLException e) {
